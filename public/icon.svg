@@ -1,0 +1,6 @@
+<svg width="192" height="192" viewBox="0 0 192 192" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="192" height="192" rx="24" fill="#2c3e50"/>
+  <path d="M48 48h96v96H48V48z" fill="#3498db" fill-opacity="0.2"/>
+  <path d="M64 64h64v64H64V64z" fill="#3498db" fill-opacity="0.4"/>
+  <text x="96" y="108" font-family="Arial, sans-serif" font-size="16" font-weight="bold" text-anchor="middle" fill="white">BLOG</text>
+</svg>
