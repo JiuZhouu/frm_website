@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { SEO } from '../components/SEO';
-import { Calendar, Clock, User, Tag, ArrowLeft, ArrowRight, List } from 'lucide-react';
-import { BlogPost } from '../types/blog';
+import { Calendar, Clock, Tag, ArrowLeft, List, ChevronRight } from 'lucide-react';
+import { BlogPost, TableOfContents } from '../types/blog';
 import { blogService } from '../services/blog';
 import { parseMarkdown, extractTableOfContents, formatDate } from '../utils/markdown';
 
@@ -11,9 +11,10 @@ const Post: React.FC = () => {
   const [post, setPost] = useState<BlogPost | null>(null);
   const [loading, setLoading] = useState(true);
   const [relatedPosts, setRelatedPosts] = useState<BlogPost[]>([]);
-  const [toc, setToc] = useState([]);
+  const [toc, setToc] = useState<TableOfContents[]>([]);
   const [activeHeading, setActiveHeading] = useState('');
   const [showToc, setShowToc] = useState(false);
+  const [expandedMap, setExpandedMap] = useState<Record<string, boolean>>({});
 
   useEffect(() => {
     if (slug) {
@@ -24,6 +25,15 @@ const Post: React.FC = () => {
         setRelatedPosts(related);
         const tableOfContents = extractTableOfContents(foundPost.content);
         setToc(tableOfContents);
+        const init: Record<string, boolean> = {};
+        const collect = (items: TableOfContents[]) => {
+          items.forEach((it) => {
+            if (it.children && it.children.length > 0) init[it.id] = true;
+            if (it.children) collect(it.children);
+          });
+        };
+        collect(tableOfContents);
+        setExpandedMap(init);
       }
       setLoading(false);
     }
@@ -32,7 +42,7 @@ const Post: React.FC = () => {
   useEffect(() => {
     // Handle scroll for active heading
     const handleScroll = () => {
-      const headings = document.querySelectorAll('h1, h2, h3');
+      const headings = document.querySelectorAll('h1, h2, h3, h4, h5, h6');
       let current = '';
       
       headings.forEach((heading) => {
@@ -132,7 +142,7 @@ const Post: React.FC = () => {
               {post.tags && post.tags.length > 0 && (
                 <div className="flex flex-wrap gap-2 mt-4">
                   {post.tags.map((tag, index) => (
-                    <Link key={index} to={`/tag/${tag.toLowerCase()}`} className="tag">
+                    <Link key={index} to={`/tag/${encodeURIComponent(tag)}`} className="tag">
                       <Tag className="h-3 w-3 mr-1" />
                       {tag}
                     </Link>
@@ -148,14 +158,20 @@ const Post: React.FC = () => {
           <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
             {/* Sidebar TOC left */}
             <aside className="lg:col-span-1 order-first">
-              {(showToc || true) && toc.length > 0 && (
+              {toc.length > 0 && (
                 <div className="toc hidden lg:block mb-6">
                   <h3 className="text-lg font-semibold text-deep-blue mb-4 flex items-center">
                     <List className="h-5 w-5 mr-2" />
                     目录
                   </h3>
                   <nav className="space-y-1">
-                    {renderTableOfContents(toc, activeHeading)}
+                    {renderTableOfContents(
+                      toc,
+                      activeHeading,
+                      expandedMap,
+                      (id: string) => setExpandedMap((prev) => ({ ...prev, [id]: prev[id] !== false ? false : true })),
+                      0
+                    )}
                   </nav>
                 </div>
               )}
@@ -163,7 +179,16 @@ const Post: React.FC = () => {
               {showToc && toc.length > 0 && (
                 <div className="lg:hidden mb-6 bg-white rounded-lg border border-gray-200 p-4">
                   <h3 className="text-lg font-semibold text-deep-blue mb-4">目录</h3>
-                  <nav className="space-y-1">{renderTableOfContents(toc, activeHeading)}</nav>
+                  <nav className="space-y-1">
+                    {renderTableOfContents(
+                      toc,
+                      activeHeading,
+                      expandedMap,
+                      (id: string) => setExpandedMap((prev) => ({ ...prev, [id]: prev[id] !== false ? false : true })),
+                      0
+                    )}
+                  </nav>
+                  
                 </div>
               )}
             </aside>
@@ -244,21 +269,49 @@ const Post: React.FC = () => {
 };
 
 // Helper function to render table of contents
-const renderTableOfContents = (items: any[], activeHeading: string, level = 0) => {
-  return items.map((item) => (
-    <div key={item.id} className={level > 0 ? `ml-${level * 4}` : ''}>
-      <a
-        href={`#${item.id}`}
-        className={`toc-item block ${
-          activeHeading === item.id ? 'toc-item active' : ''
-        }`}
-        style={{ paddingLeft: `${level * 12}px` }}
-      >
-        {item.text}
-      </a>
-      {item.children && renderTableOfContents(item.children, activeHeading, level + 1)}
-    </div>
-  ));
+const renderTableOfContents = (
+  items: TableOfContents[],
+  activeHeading: string,
+  expandedMap: Record<string, boolean>,
+  onToggle: (id: string) => void,
+  level = 0
+) => {
+  return items.map((item) => {
+    const hasChildren = item.children && item.children.length > 0;
+    const expanded = expandedMap[item.id] !== false;
+    return (
+      <div key={item.id} className={level > 0 ? `ml-${level * 4}` : ''}>
+        <div className="flex items-center">
+          {hasChildren ? (
+            <button
+              aria-label="toggle"
+              className="mr-1 text-gray-500 hover:text-light-blue transition-colors"
+              onClick={(e) => {
+                e.preventDefault();
+                onToggle(item.id);
+              }}
+            >
+              <ChevronRight className={`h-3 w-3 ${expanded ? 'rotate-90' : ''} transition-transform`} />
+            </button>
+          ) : (
+            <span className="mr-1 w-3 h-3" />
+          )}
+          <a
+            href={`#${item.id}`}
+            className={`toc-item ${activeHeading === item.id ? 'active' : ''}`}
+            style={{ paddingLeft: `${level * 12}px` }}
+          >
+            {item.text}
+          </a>
+        </div>
+        {hasChildren && expanded && (
+          <div className="mt-1">
+            {renderTableOfContents(item.children, activeHeading, expandedMap, onToggle, level + 1)}
+          </div>
+        )}
+      </div>
+    );
+  });
 };
 
 export default Post;

@@ -4,8 +4,7 @@ import { HelmetProvider } from 'react-helmet-async';
 import Home from './pages/Home';
 import Post from './pages/Post';
 import CategoryPage from './pages/Category';
-import About from './pages/About';
-import RSS from './pages/RSS';
+import TagPage from './pages/Tag';
 import Sitemap from './pages/Sitemap';
 import Header from './components/Header';
 import Footer from './components/Footer';
@@ -21,8 +20,7 @@ function App() {
               <Route path="/" element={<Home />} />
               <Route path="/post/:slug" element={<Post />} />
               <Route path="/category/:name" element={<CategoryPage />} />
-              <Route path="/about" element={<About />} />
-              <Route path="/rss" element={<RSS />} />
+              <Route path="/tag/:name" element={<TagPage />} />
               <Route path="/sitemap" element={<Sitemap />} />
             </Routes>
           </main>

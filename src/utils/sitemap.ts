@@ -6,8 +6,6 @@ export function generateSitemap(posts: BlogPost[]): string {
   
   const staticUrls = [
     { url: '/', lastmod: now, changefreq: 'daily', priority: '1.0' },
-    { url: '/about', lastmod: now, changefreq: 'monthly', priority: '0.8' },
-    { url: '/rss', lastmod: now, changefreq: 'daily', priority: '0.6' },
   ];
 
   const categoryUrls = Array.from(new Set(posts.map(post => post.category))).map(category => ({

@@ -16,15 +16,15 @@ export function SEO({
   title,
   description,
   keywords = [],
-  author = 'John Doe',
+  author,
   url,
   image = '/icon-192.png',
   type = 'website',
   publishedTime,
   modifiedTime
 }: SEOProps) {
-  const siteName = 'Personal Blog';
-  const fullTitle = title === 'Home' ? siteName : `${title} | ${siteName}`;
+  const siteName = 'Vesta学金融';
+  const fullTitle = title === '首页' ? siteName : `${title} | ${siteName}`;
   const siteUrl = 'https://yourblog.com'; // Replace with your actual domain
   const fullUrl = url ? `${siteUrl}${url}` : siteUrl;
   const fullImage = image.startsWith('http') ? image : `${siteUrl}${image}`;
@@ -35,7 +35,7 @@ export function SEO({
       <title>{fullTitle}</title>
       <meta name="description" content={description} />
       <meta name="keywords" content={keywords.join(', ')} />
-      <meta name="author" content={author} />
+      {author && <meta name="author" content={author} />}
       <link rel="canonical" href={fullUrl} />
 
       {/* Open Graph */}
@@ -53,7 +53,9 @@ export function SEO({
       <meta name="twitter:title" content={fullTitle} />
       <meta name="twitter:description" content={description} />
       <meta name="twitter:image" content={fullImage} />
-      <meta name="twitter:creator" content={`@${author.toLowerCase().replace(/\s+/g, '')}`} />
+      {author && (
+        <meta name="twitter:creator" content={`@${author.toLowerCase().replace(/\s+/g, '')}`} />
+      )}
 
       {/* Additional meta tags */}
       <meta name="robots" content="index, follow" />

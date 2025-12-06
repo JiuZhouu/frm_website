@@ -12,7 +12,7 @@ const CategoryNav: React.FC<CategoryNavProps> = ({ categories, className = "" })
 
   return (
     <nav className={`${className}`}>
-      <h3 className="text-lg font-semibold text-deep-blue mb-4">Categories</h3>
+      <h3 className="text-lg font-semibold text-deep-blue mb-4">分类</h3>
       <div className="space-y-2">
         <Link
           to="/"
@@ -22,7 +22,7 @@ const CategoryNav: React.FC<CategoryNavProps> = ({ categories, className = "" })
               : 'text-gray-600 hover:bg-gray-100 hover:text-deep-blue'
           }`}
         >
-          All Posts
+          全部文章
         </Link>
         {categories.map((category) => (
           <Link

@@ -9,7 +9,7 @@ interface SearchBarProps {
 
 const SearchBar: React.FC<SearchBarProps> = ({ 
   onSearch, 
-  placeholder = "Search articles...", 
+  placeholder = "搜索文章...", 
   className = "" 
 }) => {
   const [query, setQuery] = useState('');

@@ -14,7 +14,7 @@ export interface MarkdownConfig {
 
 // Create markdown parser instance
 export const createMarkdownParser = (): MarkdownIt => {
-  return new MarkdownIt({
+  const md = new MarkdownIt({
     html: true,
     linkify: true,
     typographer: true,
@@ -28,11 +28,35 @@ export const createMarkdownParser = (): MarkdownIt => {
       }
       return hljs.highlightAuto(code).value;
     }
-  }).use(texmath, {
+  });
+  md.use(texmath, {
     engine: katex,
     delimiters: 'dollars',
-    katexOptions: { throwOnError: false }
+    katexOptions: { throwOnError: false, strict: 'ignore' }
   });
+  const slugify = (title: string): string => {
+    return title
+      .normalize('NFKC')
+      .toLowerCase()
+      .replace(/[^\p{L}\p{N}\s-]/gu, '')
+      .replace(/\s+/g, '-')
+      .replace(/-+/g, '-')
+      .trim();
+  };
+  md.core.ruler.push('heading_ids', (state) => {
+    for (let i = 0; i < state.tokens.length; i++) {
+      const token = state.tokens[i];
+      if (token.type === 'heading_open') {
+        const inline = state.tokens[i + 1];
+        if (inline && inline.type === 'inline') {
+          const text = inline.content.trim();
+          const id = slugify(text);
+          token.attrSet('id', id);
+        }
+      }
+    }
+  });
+  return md;
 };
 
 // Extract table of contents from markdown content
@@ -45,10 +69,13 @@ export const extractTableOfContents = (content: string): TableOfContents[] => {
     if (match) {
       const level = match[1].length;
       const text = match[2].trim();
-      const id = text.toLowerCase()
-        .replace(/[^\w\s-]/g, '')
+      const id = text
+        .normalize('NFKC')
+        .toLowerCase()
+        .replace(/[^\p{L}\p{N}\s-]/gu, '')
         .replace(/\s+/g, '-')
-        .replace(/-+/g, '-');
+        .replace(/-+/g, '-')
+        .trim();
       
       const tocItem: TableOfContents = {
         id,
@@ -125,12 +152,14 @@ export const parseMarkdown = (content: string): string => {
 
 // Generate unique slug from title
 export const generateSlug = (title: string): string => {
-  return title
+  const slug = title
+    .normalize('NFKC')
     .toLowerCase()
-    .replace(/[^\w\s-]/g, '')
+    .replace(/[^\p{L}\p{N}\s-]/gu, '')
     .replace(/\s+/g, '-')
     .replace(/-+/g, '-')
     .trim();
+  return slug;
 };
 
 // Format date to readable format

@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { Calendar, Clock, User, Tag } from 'lucide-react';
+import { Calendar, Clock, Tag } from 'lucide-react';
 import { BlogPost } from '../types/blog';
 import { formatDate } from '../utils/markdown';
 
@@ -21,14 +21,9 @@ const ArticleCard: React.FC<ArticleCardProps> = ({ post }) => {
             </div>
             <div className="flex items-center space-x-1">
               <Clock className="h-4 w-4" />
-              <span>{post.readingTime} min read</span>
+              <span>{post.readingTime} 分钟阅读</span>
             </div>
-            {post.author && (
-              <div className="flex items-center space-x-1">
-                <User className="h-4 w-4" />
-                <span>{post.author}</span>
-              </div>
-            )}
+            
           </div>
           <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-light-blue text-white">
             {post.category}
@@ -53,7 +48,7 @@ const ArticleCard: React.FC<ArticleCardProps> = ({ post }) => {
             {post.tags.map((tag, index) => (
               <Link
                 key={index}
-                to={`/tag/${tag.toLowerCase()}`}
+                to={`/tag/${encodeURIComponent(tag)}`}
                 className="tag"
               >
                 <Tag className="h-3 w-3 mr-1" />
@@ -69,7 +64,7 @@ const ArticleCard: React.FC<ArticleCardProps> = ({ post }) => {
             to={`/post/${post.slug}`}
             className="inline-flex items-center text-light-blue hover:text-deep-blue font-medium transition-colors duration-200"
           >
-            Read more
+            阅读全文
             <svg className="ml-2 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
             </svg>

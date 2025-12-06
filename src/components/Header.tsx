@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Menu, X, Home, BookOpen, User, Rss } from 'lucide-react';
+import { Menu, X, Home, BookOpen } from 'lucide-react';
 
 const Header: React.FC = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -11,9 +11,7 @@ const Header: React.FC = () => {
   };
 
   const navigation = [
-    { name: 'Home', href: '/', icon: Home },
-    { name: 'About', href: '/about', icon: User },
-    { name: 'RSS', href: '/rss.xml', icon: Rss },
+    { name: '首页', href: '/', icon: Home },
   ];
 
   return (
@@ -25,7 +23,7 @@ const Header: React.FC = () => {
             <div className="flex items-center justify-center w-8 h-8 bg-light-blue text-white rounded-lg">
               <BookOpen className="h-5 w-5" />
             </div>
-            <span className="text-xl font-bold text-deep-blue">Blog</span>
+            <span className="text-xl font-bold text-deep-blue">Vesta学金融</span>
           </Link>
 
           {/* Desktop Navigation */}

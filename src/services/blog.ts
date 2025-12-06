@@ -1,7 +1,7 @@
 import { BlogPost, Category } from '../types/blog';
 import { generateSlug, calculateReadingTime, extractExcerpt, formatDate } from '../utils/markdown';
+import { loadContentPosts } from './contentLoader';
 
-// Mock blog data - in a real application, this would come from an API or static files
 const mockBlogPosts: BlogPost[] = [
   {
     slug: 'getting-started-with-react-typescript',
@@ -518,28 +518,37 @@ Performance optimization is an ongoing process. Start with the biggest bottlenec
   }
 ];
 
-// Blog service class
 export class BlogService {
-  private posts: BlogPost[] = mockBlogPosts;
+  private posts: BlogPost[] = [];
+  private popularTags: string[] = [
+    'FRM一级',
+    'FRM',
+    '风险管理',
+    '量化',
+    '投资',
+    '工具',
+    '笔记',
+  ];
 
-  // Get all posts
+  constructor() {
+    const loaded = loadContentPosts();
+    this.posts = loaded.length ? loaded : mockBlogPosts;
+  }
+
   getAllPosts(): BlogPost[] {
     return this.posts.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
   }
 
-  // Get post by slug
   getPostBySlug(slug: string): BlogPost | undefined {
     return this.posts.find(post => post.slug === slug);
   }
 
-  // Get posts by category
   getPostsByCategory(category: string): BlogPost[] {
     return this.posts
       .filter(post => post.category.toLowerCase() === category.toLowerCase())
       .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
   }
 
-  // Get all categories with post counts
   getCategories(): Category[] {
     const categoryMap = new Map<string, number>();
     
@@ -551,11 +560,10 @@ export class BlogService {
     return Array.from(categoryMap.entries()).map(([name, count]) => ({
       name,
       count,
-      slug: generateSlug(name)
+      slug: encodeURIComponent(name)
     }));
   }
 
-  // Search posts
   searchPosts(query: string): BlogPost[] {
     const lowercaseQuery = query.toLowerCase();
     return this.posts.filter(post => 
@@ -565,7 +573,6 @@ export class BlogService {
     );
   }
 
-  // Get related posts
   getRelatedPosts(currentPost: BlogPost, limit: number = 3): BlogPost[] {
     return this.posts
       .filter(post => 
@@ -576,27 +583,33 @@ export class BlogService {
       .slice(0, limit);
   }
 
-  // Get recent posts
   getRecentPosts(limit: number = 5): BlogPost[] {
     return this.posts
       .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
       .slice(0, limit);
   }
 
-  // Get posts by tag
   getPostsByTag(tag: string): BlogPost[] {
+    const norm = (s: string) => s
+      .normalize('NFKC')
+      .toLowerCase()
+      .trim();
+    const target = norm(tag);
     return this.posts
-      .filter(post => post.tags.some(t => t.toLowerCase() === tag.toLowerCase()))
+      .filter(post => post.tags.some(t => norm(t) === target))
       .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
   }
 
-  // Get all unique tags
   getAllTags(): string[] {
     const tags = new Set<string>();
     this.posts.forEach(post => {
       post.tags.forEach(tag => tags.add(tag));
     });
     return Array.from(tags).sort();
+  }
+
+  getPopularTags(): string[] {
+    return this.popularTags;
   }
 }
 

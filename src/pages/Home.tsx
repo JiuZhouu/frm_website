@@ -67,9 +67,9 @@ const Home: React.FC = () => {
   return (
     <>
       <SEO
-        title="Home"
-        description="A personal blog featuring technical articles, tutorials, and insights on web development, programming, and software engineering."
-        keywords={["blog", "programming", "web development", "tutorials", "technical articles"]}
+        title="首页"
+        description="一个专注技术文章、教程与见解的个人博客。"
+        keywords={["博客", "编程", "前端开发", "教程", "技术文章"]}
       />
 
       <div className="min-h-screen bg-gray-50">
@@ -77,11 +77,11 @@ const Home: React.FC = () => {
         <header className="bg-white border-b border-gray-200">
           <div className="container mx-auto px-4 py-6">
             <div className="text-center mb-6">
-              <h1 className="text-4xl font-bold text-deep-blue mb-2">
-                Personal Blog
+              <h1 className="text-3xl font-bold text-deep-blue mb-2">
+                Vesta的金融笔记
               </h1>
               <p className="text-gray-600 text-lg">
-                Technical articles, tutorials, and insights
+                FRM备考中
               </p>
             </div>
             
@@ -89,7 +89,7 @@ const Home: React.FC = () => {
             <div className="max-w-2xl mx-auto">
               <SearchBar 
                 onSearch={handleSearch}
-                placeholder="Search articles by title, content, or tags..."
+                placeholder="搜索文章标题、内容或标签..."
               />
             </div>
           </div>
@@ -98,37 +98,8 @@ const Home: React.FC = () => {
         {/* Main Content */}
         <main className="container mx-auto px-4 py-8">
           <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
-            {/* Article List */}
-            <div className="lg:col-span-3">
-              {searchQuery && (
-                <div className="mb-6">
-                  <p className="text-gray-600">
-                    Found {filteredPosts.length} article{filteredPosts.length !== 1 ? 's' : ''} 
-                    {searchQuery && ` for "${searchQuery}"`}
-                  </p>
-                </div>
-              )}
-
-              {filteredPosts.length === 0 ? (
-                <div className="text-center py-12">
-                  <p className="text-gray-500 text-lg">
-                    {searchQuery 
-                      ? `No articles found for "${searchQuery}"`
-                      : 'No articles available yet.'
-                    }
-                  </p>
-                </div>
-              ) : (
-                <div className="space-y-6">
-                  {filteredPosts.map((post) => (
-                    <ArticleCard key={post.slug} post={post} />
-                  ))}
-                </div>
-              )}
-            </div>
-
-            {/* Sidebar */}
-            <aside className="lg:col-span-1">
+            {/* Sidebar (moved to left) */}
+            <aside className="lg:col-span-1 order-last lg:order-first">
               <div className="space-y-6">
                 {/* Categories */}
                 <CategoryNav categories={categories} />
@@ -136,7 +107,7 @@ const Home: React.FC = () => {
                 {/* Recent Posts */}
                 <div className="bg-white rounded-lg border border-gray-200 p-4">
                   <h3 className="text-lg font-semibold text-deep-blue mb-4">
-                    Recent Posts
+                    最新文章
                   </h3>
                   <div className="space-y-3">
                     {posts.slice(0, 5).map((post) => (
@@ -157,16 +128,10 @@ const Home: React.FC = () => {
 
                 {/* Tags Cloud */}
                 <div className="bg-white rounded-lg border border-gray-200 p-4">
-                  <h3 className="text-lg font-semibold text-deep-blue mb-4">
-                    Popular Tags
-                  </h3>
+                  <h3 className="text-lg font-semibold text-deep-blue mb-4">热门标签</h3>
                   <div className="flex flex-wrap gap-2">
-                    {['React', 'TypeScript', 'CSS', 'JavaScript', 'Tutorial', 'Frontend'].map((tag) => (
-                      <a
-                        key={tag}
-                        href={`/tag/${tag.toLowerCase()}`}
-                        className="tag"
-                      >
+                    {blogService.getPopularTags().map((tag) => (
+                      <a key={tag} href={`/tag/${tag.toLowerCase()}`} className="tag">
                         {tag}
                       </a>
                     ))}
@@ -174,7 +139,37 @@ const Home: React.FC = () => {
                 </div>
               </div>
             </aside>
-          </div>
+
+            {/* Article List (moved to right) */}
+            <div className="lg:col-span-3">
+              {searchQuery && (
+                <div className="mb-6">
+                  <p className="text-gray-600">
+                    共找到 {filteredPosts.length} 篇文章{searchQuery && `，关键字 "${searchQuery}"`}
+                  </p>
+                </div>
+              )}
+
+              {filteredPosts.length === 0 ? (
+                <div className="text-center py-12">
+                  <p className="text-gray-500 text-lg">
+                    {searchQuery 
+                      ? `未找到与 "${searchQuery}" 相关的文章`
+                      : '暂时还没有文章。'
+                    }
+                  </p>
+                </div>
+              ) : (
+                <div className="space-y-6">
+                  {filteredPosts.map((post) => (
+                    <ArticleCard key={post.slug} post={post} />
+                  ))}
+                </div>
+              )}
+            </div>
+
+            
+         </div>
         </main>
       </div>
     </>
