@@ -1,4 +1,33 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Fira+Code:wght@300;400;500;600&display=swap');
+@import url('katex/dist/katex.min.css');
+/* MathJax spacing and alignment */
+.mjx-container[jax="CHTML"][display="true"] {
+  @apply my-4;
+  display: block;
+  text-align: center;
+}
+.mjx-container[jax="CHTML"][display="true"] .mjx-math {
+  white-space: nowrap;
+  overflow-x: auto;
+  max-width: 100%;
+}
+.mjx-container[jax="SVG"][display="true"] {
+  @apply my-4;
+  display: block;
+  text-align: center;
+}
+.mjx-container[jax="SVG"][display="true"] .mjx-math {
+  white-space: nowrap;
+  overflow-x: auto;
+  max-width: 100%;
+}
+.mjx-container:not([display="true"]) {
+  margin: 0 !important;
+  display: inline !important;
+  vertical-align: baseline;
+  white-space: nowrap;
+  font-size: 0.95em;
+}
 
 @tailwind base;
 @tailwind components;
@@ -24,6 +53,7 @@
 @layer base {
   html {
     scroll-behavior: smooth;
+    font-size: 90%;
   }
   
   body {
@@ -47,9 +77,9 @@
     @apply text-xl font-medium text-deep-blue mb-3 mt-5;
   }
   
-  .prose p {
-    @apply mb-4 leading-relaxed;
-  }
+.prose p {
+  @apply mb-4 leading-relaxed;
+}
   
   .prose code {
     @apply bg-gray-100 text-red-600 px-1 py-0.5 rounded text-sm font-mono;
@@ -70,6 +100,9 @@
   .prose ul, .prose ol {
     @apply my-4 ml-6;
   }
+  .prose ul { @apply list-disc; }
+  .prose ol { @apply list-decimal; }
+  .prose li > ul { @apply ml-6 mt-2; }
   
   .prose li {
     @apply mb-2;
@@ -79,8 +112,24 @@
     @apply text-light-blue hover:text-deep-blue transition-colors duration-200;
   }
   
-  .prose img {
-    @apply rounded-lg shadow-md my-6;
+.prose img {
+  @apply rounded-lg shadow-md my-6;
+}
+
+/* Inline MathJax should not wrap mid-formula */
+.prose .mjx-math { white-space: nowrap; }
+
+/* KaTeX display: single-line with horizontal scroll when overflow */
+.katex-display { white-space: nowrap; overflow-x: auto; max-width: 100%; }
+.prose .katex { white-space: nowrap; }
+
+  .prose table {
+    @apply w-full my-4;
+    border-collapse: collapse;
+  }
+  .prose th,
+  .prose td {
+    @apply border border-gray-300 p-2 text-center align-middle;
   }
 }
 
@@ -140,3 +189,5 @@
     @apply static w-full mt-4;
   }
 }
+  /* Mobile spacing for block math */
+  .mjx-container[jax="CHTML"][display="true"] { @apply my-4; }

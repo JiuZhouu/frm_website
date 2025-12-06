@@ -1,4 +1,6 @@
 import MarkdownIt from 'markdown-it';
+import texmath from 'markdown-it-texmath';
+import katex from 'katex';
 import hljs from 'highlight.js';
 import { TableOfContents } from '../types/blog';
 
@@ -26,6 +28,10 @@ export const createMarkdownParser = (): MarkdownIt => {
       }
       return hljs.highlightAuto(code).value;
     }
+  }).use(texmath, {
+    engine: katex,
+    delimiters: 'dollars',
+    katexOptions: { throwOnError: false }
   });
 };
 

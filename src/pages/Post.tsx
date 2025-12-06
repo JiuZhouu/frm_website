@@ -78,10 +78,10 @@ const Post: React.FC = () => {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <div className="text-center">
-          <h1 className="text-2xl font-bold text-deep-blue mb-4">Post Not Found</h1>
-          <p className="text-gray-600 mb-4">The article you're looking for doesn't exist.</p>
+          <h1 className="text-2xl font-bold text-deep-blue mb-4">文章未找到</h1>
+          <p className="text-gray-600 mb-4">你访问的文章不存在。</p>
           <Link to="/" className="btn btn-primary">
-            Go Back Home
+            返回首页
           </Link>
         </div>
       </div>
@@ -96,7 +96,6 @@ const Post: React.FC = () => {
         title={post.title}
         description={post.excerpt}
         keywords={post.tags}
-        author={post.author}
         url={`/post/${post.slug}`}
         type="article"
         publishedTime={post.date}
@@ -105,61 +104,35 @@ const Post: React.FC = () => {
       <div className="min-h-screen bg-gray-50">
         {/* Article Header */}
         <header className="bg-white border-b border-gray-200">
-          <div className="container mx-auto px-4 py-8">
-            <div className="max-w-4xl mx-auto">
-              {/* Breadcrumb */}
-              <nav className="flex items-center space-x-2 text-sm text-gray-500 mb-6">
-                <Link to="/" className="hover:text-light-blue transition-colors duration-200">
-                  Home
-                </Link>
+          <div className="container mx-auto px-4 py-6">
+            <div className="max-w-5xl mx-auto">
+              <nav className="flex items-center space-x-2 text-xs text-gray-500 mb-3">
+                <Link to="/" className="hover:text-light-blue transition-colors duration-200">首页</Link>
                 <span>/</span>
-                <Link 
-                  to={`/category/${post.category.toLowerCase()}`} 
-                  className="hover:text-light-blue transition-colors duration-200"
-                >
-                  {post.category}
-                </Link>
+                <Link to={`/category/${encodeURIComponent(post.category)}`} className="hover:text-light-blue transition-colors duration-200">{post.category}</Link>
                 <span>/</span>
                 <span className="text-gray-700">{post.title}</span>
               </nav>
 
-              {/* Article Meta */}
-              <div className="mb-4">
-                <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-light-blue text-white">
-                  {post.category}
-                </span>
-              </div>
-
-              <h1 className="text-4xl font-bold text-deep-blue mb-6 leading-tight">
-                {post.title}
-              </h1>
-
-              <div className="flex flex-wrap items-center gap-4 text-sm text-gray-600">
-                <div className="flex items-center space-x-1">
-                  <Calendar className="h-4 w-4" />
-                  <span>{formatDate(post.date)}</span>
-                </div>
-                <div className="flex items-center space-x-1">
-                  <Clock className="h-4 w-4" />
-                  <span>{post.readingTime} min read</span>
-                </div>
-                {post.author && (
+              <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-2">
+                <h1 className="text-3xl font-bold text-deep-blue leading-tight md:mb-0">{post.title}</h1>
+                <div className="flex flex-wrap items-center gap-3 text-xs text-gray-600 md:justify-end md:text-right">
                   <div className="flex items-center space-x-1">
-                    <User className="h-4 w-4" />
-                    <span>{post.author}</span>
+                    <Calendar className="h-4 w-4" />
+                    <span>{formatDate(post.date)}</span>
                   </div>
-                )}
+                  <div className="flex items-center space-x-1">
+                    <Clock className="h-4 w-4" />
+                    <span>{post.readingTime} 分钟阅读</span>
+                  </div>
+                  <span className="px-2 py-0.5 rounded-full text-xs bg-blue-50 text-light-blue">{post.category}</span>
+                </div>
               </div>
 
-              {/* Tags */}
               {post.tags && post.tags.length > 0 && (
-                <div className="flex flex-wrap gap-2 mt-6">
+                <div className="flex flex-wrap gap-2 mt-4">
                   {post.tags.map((tag, index) => (
-                    <Link
-                      key={index}
-                      to={`/tag/${tag.toLowerCase()}`}
-                      className="tag"
-                    >
+                    <Link key={index} to={`/tag/${tag.toLowerCase()}`} className="tag">
                       <Tag className="h-3 w-3 mr-1" />
                       {tag}
                     </Link>
@@ -173,8 +146,30 @@ const Post: React.FC = () => {
         {/* Main Content */}
         <div className="container mx-auto px-4 py-8">
           <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
+            {/* Sidebar TOC left */}
+            <aside className="lg:col-span-1 order-first">
+              {(showToc || true) && toc.length > 0 && (
+                <div className="toc hidden lg:block mb-6">
+                  <h3 className="text-lg font-semibold text-deep-blue mb-4 flex items-center">
+                    <List className="h-5 w-5 mr-2" />
+                    目录
+                  </h3>
+                  <nav className="space-y-1">
+                    {renderTableOfContents(toc, activeHeading)}
+                  </nav>
+                </div>
+              )}
+
+              {showToc && toc.length > 0 && (
+                <div className="lg:hidden mb-6 bg-white rounded-lg border border-gray-200 p-4">
+                  <h3 className="text-lg font-semibold text-deep-blue mb-4">目录</h3>
+                  <nav className="space-y-1">{renderTableOfContents(toc, activeHeading)}</nav>
+                </div>
+              )}
+            </aside>
+
             {/* Article Content */}
-            <article className="lg:col-span-3">
+            <article className="lg:col-span-3 order-last">
               <div className="bg-white rounded-lg border border-gray-200 p-8">
                 {/* Mobile TOC Toggle */}
                 <div className="lg:hidden mb-6">
@@ -183,7 +178,7 @@ const Post: React.FC = () => {
                     className="flex items-center space-x-2 text-light-blue hover:text-deep-blue transition-colors duration-200"
                   >
                     <List className="h-4 w-4" />
-                    <span>Table of Contents</span>
+                    <span>目录</span>
                   </button>
                 </div>
 
@@ -198,7 +193,7 @@ const Post: React.FC = () => {
               {relatedPosts.length > 0 && (
                 <div className="mt-8 bg-white rounded-lg border border-gray-200 p-6">
                   <h3 className="text-xl font-semibold text-deep-blue mb-4">
-                    Related Articles
+                    相关文章
                   </h3>
                   <div className="space-y-4">
                     {relatedPosts.map((relatedPost) => (
@@ -235,38 +230,12 @@ const Post: React.FC = () => {
                   className="flex items-center space-x-2 text-light-blue hover:text-deep-blue transition-colors duration-200"
                 >
                   <ArrowLeft className="h-4 w-4" />
-                  <span>Back to Articles</span>
+                  <span>返回首页</span>
                 </Link>
               </div>
             </article>
 
-            {/* Sidebar */}
-            <aside className="lg:col-span-1">
-              {/* Table of Contents - Desktop */}
-              {(showToc || true) && toc.length > 0 && (
-                <div className="toc hidden lg:block mb-6">
-                  <h3 className="text-lg font-semibold text-deep-blue mb-4 flex items-center">
-                    <List className="h-5 w-5 mr-2" />
-                    Table of Contents
-                  </h3>
-                  <nav className="space-y-1">
-                    {renderTableOfContents(toc, activeHeading)}
-                  </nav>
-                </div>
-              )}
-
-              {/* Mobile TOC */}
-              {showToc && toc.length > 0 && (
-                <div className="lg:hidden mb-6 bg-white rounded-lg border border-gray-200 p-4">
-                  <h3 className="text-lg font-semibold text-deep-blue mb-4">
-                    Table of Contents
-                  </h3>
-                  <nav className="space-y-1">
-                    {renderTableOfContents(toc, activeHeading)}
-                  </nav>
-                </div>
-              )}
-            </aside>
+            
           </div>
         </div>
       </div>
