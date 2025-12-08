@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import { SEO } from '../components/SEO';
 import ArticleCard from '../components/ArticleCard';
 import SearchBar from '../components/SearchBar';
@@ -112,12 +113,12 @@ const Home: React.FC = () => {
                   <div className="space-y-3">
                     {posts.slice(0, 5).map((post) => (
                       <div key={post.slug}>
-                        <a 
-                          href={`/post/${post.slug}`}
+                        <Link 
+                          to={`/post/${post.slug}`}
                           className="text-sm text-gray-700 hover:text-light-blue transition-colors duration-200 line-clamp-2"
                         >
                           {post.title}
-                        </a>
+                        </Link>
                         <p className="text-xs text-gray-500 mt-1">
                           {formatDate(post.date)}
                         </p>
@@ -131,9 +132,9 @@ const Home: React.FC = () => {
                   <h3 className="text-lg font-semibold text-deep-blue mb-4">热门标签</h3>
                   <div className="flex flex-wrap gap-2">
                     {blogService.getPopularTags().map((tag) => (
-                      <a key={tag} href={`/tag/${tag.toLowerCase()}`} className="tag">
+                      <Link key={tag} to={`/tag/${encodeURIComponent(tag)}`} className="tag">
                         {tag}
-                      </a>
+                      </Link>
                     ))}
                   </div>
                 </div>

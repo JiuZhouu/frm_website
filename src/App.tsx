@@ -12,7 +12,7 @@ import Footer from './components/Footer';
 function App() {
   return (
     <HelmetProvider>
-      <Router>
+      <Router basename={import.meta.env.BASE_URL}>
         <div className="min-h-screen bg-gray-50">
           <Header />
           <main>
