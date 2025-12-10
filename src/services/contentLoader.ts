@@ -8,7 +8,7 @@ const parseFrontmatter = (raw: string) => {
   if (!fmMatch) return { data: {}, body: raw }
   const block = fmMatch[1]
   const body = raw.slice(fmMatch[0].length)
-  const data: Record<string, any> = {}
+  const data: Record<string, string | string[]> = {}
   block.split('\n').forEach(line => {
     const idx = line.indexOf(':')
     if (idx === -1) return

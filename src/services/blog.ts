@@ -1,5 +1,4 @@
 import { BlogPost, Category } from '../types/blog';
-import { generateSlug, calculateReadingTime, extractExcerpt, formatDate } from '../utils/markdown';
 import { loadContentPosts } from './contentLoader';
 
 const mockBlogPosts: BlogPost[] = [

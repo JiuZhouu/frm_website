@@ -3,12 +3,11 @@ import { useParams, Link } from 'react-router-dom';
 import { SEO } from '../components/SEO';
 import ArticleCard from '../components/ArticleCard';
 import { blogService } from '../services/blog';
-import { BlogPost, Category } from '../types/blog';
+import { BlogPost } from '../types/blog';
 
 const CategoryPage: React.FC = () => {
   const { name } = useParams<{ name: string }>();
   const [posts, setPosts] = useState<BlogPost[]>([]);
-  const [categories, setCategories] = useState<Category[]>([]);
   const [loading, setLoading] = useState(true);
   const [categoryName, setCategoryName] = useState('');
 
