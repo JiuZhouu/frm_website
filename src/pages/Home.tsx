@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { SEO } from '../components/SEO';
 import ArticleCard from '../components/ArticleCard';
-import SearchBar from '../components/SearchBar';
+// Search bar moved to global header
 import CategoryNav from '../components/CategoryNav';
 import { blogService } from '../services/blog';
 import { BlogPost } from '../types/blog';
@@ -16,27 +16,26 @@ const Home: React.FC = () => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Simulate loading data
-    setTimeout(() => {
-      const allPosts = blogService.getAllPosts();
-      const allCategories = blogService.getCategories();
-      
-      setPosts(allPosts);
-      setFilteredPosts(allPosts);
-      setCategories(allCategories);
-      setLoading(false);
-    }, 500);
+    const allPosts = blogService.getAllPosts();
+    const allCategories = blogService.getCategories();
+    setPosts(allPosts);
+    setFilteredPosts(allPosts);
+    setCategories(allCategories);
+    setLoading(false);
   }, []);
 
-  const handleSearch = (query: string) => {
-    setSearchQuery(query);
-    if (query.trim() === '') {
+  // Search handled via global header: Home listens to query param changes
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const q = params.get('q') || '';
+    setSearchQuery(q);
+    if (q.trim() === '') {
       setFilteredPosts(posts);
     } else {
-      const searchResults = blogService.searchPosts(query);
+      const searchResults = blogService.searchPosts(q);
       setFilteredPosts(searchResults);
     }
-  };
+  }, [posts]);
 
   if (loading) {
     return (
@@ -74,27 +73,7 @@ const Home: React.FC = () => {
       />
 
       <div className="min-h-screen bg-gray-50">
-        {/* Header */}
-        <header className="bg-white border-b border-gray-200">
-          <div className="container mx-auto px-4 py-6">
-            <div className="text-center mb-6">
-              <h1 className="text-3xl font-bold text-deep-blue mb-2">
-                Vesta的金融笔记
-              </h1>
-              <p className="text-gray-600 text-lg">
-                FRM备考中
-              </p>
-            </div>
-            
-            {/* Search Bar */}
-            <div className="max-w-2xl mx-auto">
-              <SearchBar 
-                onSearch={handleSearch}
-                placeholder="搜索文章标题、内容或标签..."
-              />
-            </div>
-          </div>
-        </header>
+        {/* Header removed: hero title & local search moved to global header */}
 
         {/* Main Content */}
         <main className="container mx-auto px-4 py-8">
