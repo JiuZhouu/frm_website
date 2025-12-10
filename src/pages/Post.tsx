@@ -114,7 +114,7 @@ const Post: React.FC = () => {
       <div className="min-h-screen bg-gray-50">
         {/* Article Header */}
         <header className="bg-white border-b border-gray-200">
-          <div className="container mx-auto px-4 py-6">
+          <div className="container mx-auto px-6 md:px-8 py-6">
             <div className="max-w-5xl mx-auto">
               <nav className="flex items-center space-x-2 text-xs text-gray-500 mb-3">
                 <Link to="/" className="hover:text-light-blue transition-colors duration-200">首页</Link>
@@ -154,7 +154,7 @@ const Post: React.FC = () => {
         </header>
 
         {/* Main Content */}
-        <div className="container mx-auto px-4 py-8">
+        <div className="container mx-auto px-6 md:px-8 py-8">
           <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
             {/* Sidebar TOC left */}
             <aside className="lg:col-span-1 order-first">
