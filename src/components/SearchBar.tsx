@@ -5,23 +5,29 @@ interface SearchBarProps {
   onSearch: (query: string) => void;
   placeholder?: string;
   className?: string;
+  fireOnMount?: boolean;
 }
 
 const SearchBar: React.FC<SearchBarProps> = ({ 
   onSearch, 
   placeholder = "搜索文章...", 
-  className = "" 
+  className = "",
+  fireOnMount = true,
 }) => {
   const [query, setQuery] = useState('');
   const [isFocused, setIsFocused] = useState(false);
+  const mounted = React.useRef(false);
 
   useEffect(() => {
+    if (!mounted.current) {
+      mounted.current = true;
+      if (!fireOnMount) return;
+    }
     const timeoutId = setTimeout(() => {
       onSearch(query);
-    }, 300); // Debounce search by 300ms
-
+    }, 300);
     return () => clearTimeout(timeoutId);
-  }, [query, onSearch]);
+  }, [query, onSearch, fireOnMount]);
 
   const handleClear = () => {
     setQuery('');

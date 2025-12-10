@@ -26,10 +26,12 @@ const Header: React.FC = () => {
             <div className="w-80">
               <SearchBar
                 onSearch={(q) => {
-                  const search = q ? `?q=${encodeURIComponent(q)}` : '';
+                  if (!q.trim()) return;
+                  const search = `?q=${encodeURIComponent(q)}`;
                   navigate({ pathname: '/', search });
                 }}
                 placeholder="搜索文章标题、内容或标签..."
+                fireOnMount={false}
               />
             </div>
           </div>
@@ -49,11 +51,13 @@ const Header: React.FC = () => {
           <div className="md:hidden border-t border-gray-200 px-3 py-3">
             <SearchBar
               onSearch={(q) => {
-                const search = q ? `?q=${encodeURIComponent(q)}` : '';
+                if (!q.trim()) return;
+                const search = `?q=${encodeURIComponent(q)}`;
                 navigate({ pathname: '/', search });
                 setIsMenuOpen(false);
               }}
               placeholder="搜索文章标题、内容或标签..."
+              fireOnMount={false}
             />
           </div>
         )}
