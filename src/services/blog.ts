@@ -520,15 +520,7 @@ Performance optimization is an ongoing process. Start with the biggest bottlenec
 
 export class BlogService {
   private posts: BlogPost[] = [];
-  private popularTags: string[] = [
-    'FRM一级',
-    'FRM',
-    '风险管理',
-    '量化',
-    '投资',
-    '工具',
-    '笔记',
-  ];
+  
 
   constructor() {
     const loaded = loadContentPosts();
@@ -608,8 +600,17 @@ export class BlogService {
     return Array.from(tags).sort();
   }
 
-  getPopularTags(): string[] {
-    return this.popularTags;
+  getPopularTags(limit: number = 12): string[] {
+    const counts = new Map<string, number>();
+    this.posts.forEach(post => {
+      post.tags.forEach(tag => {
+        counts.set(tag, (counts.get(tag) || 0) + 1);
+      });
+    });
+    return Array.from(counts.entries())
+      .sort((a, b) => b[1] - a[1])
+      .map(([tag]) => tag)
+      .slice(0, limit);
   }
 }
 
