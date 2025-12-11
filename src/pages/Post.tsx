@@ -101,7 +101,7 @@ const Post: React.FC = () => {
   const contentHtml = parseMarkdown(post.content);
 
   return (
-    <>
+    <> 
       <SEO
         title={post.title}
         description={post.excerpt}
@@ -136,6 +136,12 @@ const Post: React.FC = () => {
                     <span>{post.readingTime} 分钟阅读</span>
                   </div>
                   <span className="px-2 py-0.5 rounded-full text-xs bg-blue-50 text-light-blue">{post.category}</span>
+                  <button
+                    className="btn btn-secondary whitespace-nowrap"
+                    onClick={() => window.print()}
+                  >
+                    打印为PDF
+                  </button>
                 </div>
               </div>
 

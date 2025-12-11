@@ -203,3 +203,22 @@
 }
   /* Mobile spacing for block math */
   .mjx-container[jax="CHTML"][display="true"] { @apply my-4; }
+
+/* Print-only adjustments */
+@media print {
+  header,
+  aside,
+  .mt-8.bg-white.rounded-lg.border.border-gray-200.p-6,
+  .mt-8.flex.items-center.justify-between {
+    display: none !important;
+  }
+  body { background: #ffffff !important; }
+  .container { padding: 0 !important; }
+  html { font-size: 75% !important; }
+  .prose { max-width: 100% !important; }
+  .prose p, .prose li { font-size: 0.95rem !important; }
+  .prose h1 { font-size: 1.6rem !important; }
+  .prose h2 { font-size: 1.3rem !important; }
+  .prose h3 { font-size: 1.1rem !important; }
+  .prose code { font-size: 0.85rem !important; }
+}
