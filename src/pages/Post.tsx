@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { SEO } from '../components/SEO';
 import { Calendar, Clock, Tag, ArrowLeft, List, ChevronRight } from 'lucide-react';
@@ -15,6 +15,7 @@ const Post: React.FC = () => {
   const [activeHeading, setActiveHeading] = useState('');
   const [showToc, setShowToc] = useState(false);
   const [expandedMap, setExpandedMap] = useState<Record<string, boolean>>({});
+  const contentRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
     if (slug) {
@@ -59,6 +60,27 @@ const Post: React.FC = () => {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
+  const contentHtml = post ? parseMarkdown(post.content) : '';
+  useEffect(() => {
+    const root = contentRef.current;
+    if (!root) return;
+    if (!contentHtml) return;
+    const tables = root.querySelectorAll('table');
+    tables.forEach((tbl) => {
+      tbl.classList.add('md-table');
+      if (!tbl.parentElement || !tbl.parentElement.classList.contains('md-table-wrapper')) {
+        const wrapper = document.createElement('div');
+        wrapper.className = 'md-table-wrapper';
+        tbl.parentElement?.insertBefore(wrapper, tbl);
+        wrapper.appendChild(tbl);
+      }
+      tbl.querySelectorAll('td, th').forEach((cell) => {
+        (cell as HTMLElement).style.wordBreak = 'break-word';
+        (cell as HTMLElement).style.whiteSpace = 'normal';
+      });
+    });
+  }, [contentHtml]);
+
   if (loading) {
     return (
       <div className="min-h-screen bg-gray-50">
@@ -98,7 +120,7 @@ const Post: React.FC = () => {
     );
   }
 
-  const contentHtml = parseMarkdown(post.content);
+  
 
   return (
     <> 
@@ -216,6 +238,7 @@ const Post: React.FC = () => {
                 {/* Article Content */}
                 <div 
                   className="prose prose-lg max-w-none"
+                  ref={contentRef}
                   dangerouslySetInnerHTML={{ __html: contentHtml }}
                 />
               </div>

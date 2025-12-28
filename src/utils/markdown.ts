@@ -56,6 +56,11 @@ export const createMarkdownParser = (): MarkdownIt => {
       }
     }
   });
+  const defaultTableOpen = md.renderer.rules.table_open || ((tokens, idx, options, env, self) => self.renderToken(tokens, idx, options));
+  md.renderer.rules.table_open = (tokens, idx, options, env, self) => {
+    tokens[idx].attrJoin('class', 'md-table');
+    return defaultTableOpen(tokens, idx, options, env, self);
+  };
   return md;
 };
 
