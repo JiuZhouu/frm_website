@@ -61,6 +61,29 @@ export const createMarkdownParser = (): MarkdownIt => {
     tokens[idx].attrJoin('class', 'md-table');
     return defaultTableOpen(tokens, idx, options, env, self);
   };
+  const defaultImage = md.renderer.rules.image || ((tokens, idx, options, env, self) => self.renderToken(tokens, idx, options));
+  md.renderer.rules.image = (tokens, idx, options, env, self) => {
+    const token = tokens[idx];
+    const src = token.attrGet('src');
+    if (src) {
+      const isExternal = /^https?:\/\//i.test(src) || /^data:/i.test(src);
+      if (!isExternal) {
+        const base = (import.meta.env.BASE_URL || '/');
+        const withBase = (p: string) => {
+          const b = base.endsWith('/') ? base : `${base}/`;
+          return b + p.replace(/^\/+/, '');
+        };
+        if (src.startsWith('../public/')) {
+          token.attrSet('src', withBase(src.replace('../public/', '')));
+        } else if (src.startsWith('/public/')) {
+          token.attrSet('src', withBase(src.replace('/public/', '')));
+        } else if (src.startsWith('/')) {
+          token.attrSet('src', withBase(src));
+        }
+      }
+    }
+    return defaultImage(tokens, idx, options, env, self);
+  };
   return md;
 };
 
